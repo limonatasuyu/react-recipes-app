@@ -9,6 +9,57 @@ import { openDatabase } from "../db";
 
 let db: IDBDatabase;
 
+export function GetCategoriesSelect(): Promise<
+  | { success: false; message: string }
+  | { success: true; message: string; data: { id: number; name: string }[] }
+> {
+  return new Promise(async (resolve) => {
+    try {
+      const db = await openDatabase("get categories");
+      const transaction = db.transaction(Stores.Categories, "readonly");
+
+      const store = transaction.objectStore(Stores.Categories);
+
+      const categoriesRequest = store.getAll();
+
+      categoriesRequest.onsuccess = async () => {
+        const categories = categoriesRequest.result.map((i) => ({
+          id: Number(i.id),
+          name: String(i.name),
+        }));
+
+        resolve({
+          success: true,
+          message: "Categories fetched successfully.",
+          data: categories,
+        });
+
+        db.close();
+      };
+
+      categoriesRequest.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to fetch categories.",
+        });
+        db.close();
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        resolve({
+          success: false,
+          message: error.message,
+        });
+      } else {
+        resolve({
+          success: false,
+          message: "An unknown error occurred.",
+        });
+      }
+    }
+  });
+}
+
 export function UpdateCategory(
   dto: UpdateCategoryDTO
 ): Promise<{ success: boolean; message: string }> {
@@ -64,12 +115,36 @@ export function UpdateCategory(
             db.close();
           };
         } else {
-          categoryStore.put(category);
-          resolve({
-            success: true,
-            message: "Category updated successfully.",
-          });
-          db.close();
+          if (dto.imageDataUrl) {
+            const imageId = Date.now();
+            const imageRequest = imageStore.add({
+              id: imageId,
+              dataUrl: dto.imageDataUrl,
+            });
+            imageRequest.onsuccess = () => {
+              category.imageId = imageId;
+              categoryStore.put(category);
+              resolve({
+                success: true,
+                message: "Category updated successfully.",
+              });
+              db.close();
+            };
+            imageRequest.onerror = () => {
+              resolve({
+                success: false,
+                message: "Error while adding the image related to category",
+              });
+              db.close();
+            };
+          } else {
+            categoryStore.put(category);
+            resolve({
+              success: true,
+              message: "Category updated successfully.",
+            });
+            db.close();
+          }
         }
       };
 
@@ -96,9 +171,12 @@ export function GetCategory(
   return new Promise(async (resolve) => {
     try {
       const db = await openDatabase("get category");
-      const transaction = db.transaction([Stores.Categories, Stores.Images], "readonly");
+      const transaction = db.transaction(
+        [Stores.Categories, Stores.Images],
+        "readonly"
+      );
       const categoryStore = transaction.objectStore(Stores.Categories);
-      const imageStore = transaction.objectStore(Stores.Images)
+      const imageStore = transaction.objectStore(Stores.Images);
       const categoryRequest = categoryStore.get(dto.id);
 
       categoryRequest.onsuccess = () => {
@@ -111,24 +189,26 @@ export function GetCategory(
           return;
         }
 
-        const imageRequest = imageStore.get(categoryRequest.result.imageId)
+        const imageRequest = imageStore.get(categoryRequest.result.imageId);
 
         imageRequest.onsuccess = () => {
           resolve({
             success: true,
             message: "Category retrieved successfully.",
-            data: { name: categoryRequest.result.name, imageDataUrl: imageRequest.result.dataUrl }
-          })
-        }
-        
+            data: {
+              name: categoryRequest.result.name,
+              imageDataUrl: imageRequest.result.dataUrl,
+            },
+          });
+        };
+
         imageRequest.onerror = () => {
           resolve({
             success: false,
-            message: "Error while trying to get image related to category"
-          })
-        }
-
-      }
+            message: "Error while trying to get image related to category",
+          });
+        };
+      };
       categoryRequest.onerror = () => {
         resolve({
           success: false,

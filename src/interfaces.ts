@@ -28,7 +28,7 @@ export interface AddRecipeDTO {
   description?: string;
   instructions: string;
   categoryId: number;
-  image: File;
+  imageDataUrl?: string;
 }
 
 export interface GetRecipeDTO {
@@ -41,9 +41,9 @@ export interface UpdateRecipeDTO {
   ingredients: string[];
   description?: string;
   instructions: string;
-  imgId: number;
   categoryId: number;
   isFavorite: boolean;
+  imageDataUrl?: string;
 }
 
 export interface DeleteRecipeDTO {
@@ -54,8 +54,4 @@ export interface DeleteRecipeDTO {
 export interface AddImageDTO {
   dataUrl: string;  
 }
-/*
-export interface GetImageDTO {
-  imgId: number
-}
-*/
+

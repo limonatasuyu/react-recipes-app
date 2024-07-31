@@ -3,13 +3,71 @@ import {
   GetRecipeDTO,
   UpdateRecipeDTO,
   DeleteRecipeDTO,
+  RecipeData,
 } from "../interfaces";
 import { Stores } from "../constants";
 import { openDatabase } from "../db";
 
 let db: IDBDatabase;
 
-export function GetRecipeById(dto: GetRecipeDTO): Promise<any> {
+export function GetAllRecipes(): Promise<
+  | { success: false; message: string }
+  | { success: true; message: string; data: RecipeData[] }
+> {
+  return new Promise(async (resolve) => {
+    try {
+      db = await openDatabase("get all recipes");
+      const transaction = db.transaction(Stores.Recipes, "readonly");
+      const store = transaction.objectStore(Stores.Recipes);
+      const query = store.getAll();
+
+      query.onsuccess = () => {
+        resolve({
+          success: true,
+          message: "Recipes retrieved successfully.",
+          data: query.result,
+        });
+        db.close();
+      };
+
+      query.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to get recipes.",
+        });
+        db.close();
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        resolve({
+          success: false,
+          message: error.message,
+        });
+      } else {
+        resolve({
+          success: false,
+          message: "An unknown error occurred.",
+        });
+      }
+    }
+  });
+}
+
+export function GetRecipeById(dto: GetRecipeDTO): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: string;
+      data: {
+        name: string;
+        ingredients: string[];
+        description: string;
+        instructions: string;
+        categoryId: number;
+        imageDataUrl?: string;
+      };
+    }
+> {
   return new Promise(async (resolve) => {
     try {
       db = await openDatabase("get recipe");
@@ -104,7 +162,6 @@ export function UpdateRecipe(dto: UpdateRecipeDTO): Promise<any> {
           recipe.name = dto.name;
           recipe.ingredients = dto.ingredients;
           recipe.description = dto.description;
-          recipe.imgId = dto.imgId;
           recipe.categoryId = dto.categoryId;
           recipe.isFavorite = dto.isFavorite;
           store.put(recipe);
@@ -151,7 +208,8 @@ export function AddRecipe(dto: AddRecipeDTO): Promise<any> {
       db = await openDatabase("add recipe");
       const transaction = db.transaction(Stores.Recipes, "readwrite");
       const store = transaction.objectStore(Stores.Recipes);
-      const query = store.add(dto);
+      const id = Date.now();
+      const query = store.add({ ...dto, id: id, isFavorite: false });
 
       query.onsuccess = () => {
         resolve({
@@ -224,4 +282,3 @@ export function DeleteRecipe(dto: DeleteRecipeDTO): Promise<any> {
     }
   });
 }
-
