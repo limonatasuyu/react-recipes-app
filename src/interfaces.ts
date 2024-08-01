@@ -11,7 +11,7 @@ export interface RecipeData {
   description?: string;
   instructions: string;
   categoryId: number;
-  image: File;
+  imageDataUrl: string;
 }
 
 export interface UpdateCategoryDTO {name: string, imageDataUrl: string | null, id: number}

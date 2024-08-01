@@ -2,21 +2,27 @@ import { useState, ChangeEvent, ChangeEventHandler, useEffect } from "react";
 import { showToast } from "../../Toast";
 import { GetCategory, UpdateCategory } from "../../../logic/CategoryLogic";
 
-export function EditCategoryForm({ handleClose, categoryId, mutate }: { handleClose: () => void; categoryId: number, mutate: () => void }) {
-  
+export function EditCategoryForm({
+  handleClose,
+  categoryId,
+  mutate,
+}: {
+  handleClose: () => void;
+  categoryId: number;
+  mutate: () => void;
+}) {
   const [textValue, setTextValue] = useState("");
   const [picture, setPicture] = useState<string | null>(null);
   const [pictureName, setPictureName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTextValid, setIsTextValid] = useState(true);
-  
+
   useEffect(() => {
-    GetCategory({id:categoryId}).then(result => {
-      setTextValue(result.data.name)
-      if (result.data.imageDataUrl) setPicture(result.data.imageDataUrl)
-    })
-  
-  }, [categoryId])
+    GetCategory({ id: categoryId }).then((result) => {
+      setTextValue(result.data.name);
+      if (result.data.imageDataUrl) setPicture(result.data.imageDataUrl);
+    });
+  }, [categoryId]);
 
   const handleImageChange: ChangeEventHandler<HTMLInputElement> = (
     e: ChangeEvent<HTMLInputElement>
@@ -36,79 +42,94 @@ export function EditCategoryForm({ handleClose, categoryId, mutate }: { handleCl
 
   function handleSubmit() {
     if (!textValue.length) {
-      setIsTextValid(false)
-      return
+      setIsTextValid(false);
+      return;
     }
 
     setIsSubmitting(true);
-    document.body.style.cursor = "wait"
-    UpdateCategory({name: textValue, imageDataUrl: picture, id: categoryId}).then((result) => {
-      setIsSubmitting(false)
+    document.body.style.cursor = "wait";
+    UpdateCategory({
+      name: textValue,
+      imageDataUrl: picture,
+      id: categoryId,
+    }).then((result) => {
+      setIsSubmitting(false);
       if (result.success) {
-        handleClose()
-        showToast(result.message, "success")
-        mutate()
-      } else showToast(result.message, "error") 
-      document.body.style.cursor = "initial"
-    })
-
+        handleClose();
+        showToast(result.message, "success");
+        mutate();
+      } else showToast(result.message, "error");
+      document.body.style.cursor = "initial";
+    });
   }
 
   function handleTextChange(e: ChangeEvent<HTMLInputElement>) {
-    setTextValue(e.target.value)
-    if (e.target.value.length) setIsTextValid(true)
-    else setIsTextValid(false)
+    setTextValue(e.target.value);
+    if (e.target.value.length) setIsTextValid(true);
+    else setIsTextValid(false);
   }
 
   return (
-    <div>
+    <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex items-center">
-        <div>
-          <div className="h-40 w-40 overflow-hidden border-gray-300 border-2 rounded">
+        <div className="mr-8">
+          <div className="h-40 w-40 overflow-hidden border-gray-300 border-2 rounded-lg">
             <img
               src={picture ?? "placeHolder.png"}
-              className="w-40"
+              className="w-full h-full object-cover"
               alt="category"
             />
           </div>
           <label
             htmlFor="category-image-input"
-            className="flex flex-col items-center mt-2"
+            className="flex flex-col items-center mt-4"
           >
-            <div className="rounded-xl px-4 text-white bg-[#d24309] hover:opacity-50 cursor-pointer">
+            <div className="rounded-full px-4 py-2 text-white bg-[#d24309] hover:bg-[#b13607] cursor-pointer transition-colors duration-300">
               {picture ? "Change" : "Add"} Image
             </div>
-            <div>{pictureName}</div>
+            {pictureName && (
+              <div className="mt-2 text-sm text-gray-600">{pictureName}</div>
+            )}
           </label>
           <input
             id="category-image-input"
             type="file"
-            accept="image/png image/jpeg"
+            accept="image/png, image/jpeg"
             onChange={handleImageChange}
             className="hidden"
           />
         </div>
-        <div className="mb-16 ml-12">
-          <label>Category Name</label>
-          <input
-            type="text"
-            className="border-[#d24309] border-2 outline-none rounded"
-            onChange={handleTextChange}
-            value={textValue}
-          />
-          {!isTextValid && <p className="text-red-400 font-bold">Please insert a valid category name</p>}
+
+        <div className="flex-1 mb-16">
+          <div className="mb-4">
+            <label className="block mb-2 font-medium">Category Name</label>
+            <input
+              type="text"
+              className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
+              onChange={handleTextChange}
+              value={textValue}
+            />
+            {!isTextValid && (
+              <p className="text-red-400 font-bold mt-2">
+                Please insert a valid category name
+              </p>
+            )}
+          </div>
         </div>
       </div>
-      <div className="flex justify-around mt-2">
+
+      <div className="flex justify-around mt-6">
         <button
-          className={`rounded py-2 px-4 text-white bg-[#d24309] hover:opacity-50 ${isSubmitting ? "opacity-50" : ""}`}
+          className={`rounded-full py-2 px-6 text-white bg-[#d24309] hover:bg-[#b13607] transition-colors duration-300 ${
+            isSubmitting ? "opacity-50" : ""
+          }`}
           onClick={handleSubmit}
           disabled={isSubmitting}
         >
           Submit
         </button>
         <button
-          className="rounded py-2 px-4 text-white bg-gray-300"
+          className="rounded-full py-2 px-6 text-white bg-gray-400 hover:bg-gray-500 transition-colors duration-300"
           onClick={handleClose}
         >
           Cancel
@@ -117,4 +138,3 @@ export function EditCategoryForm({ handleClose, categoryId, mutate }: { handleCl
     </div>
   );
 }
-

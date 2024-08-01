@@ -13,7 +13,6 @@ export default function AllRecipesPage() {
     null
   );
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
-
   useEffect(() => {
     GetAllRecipes().then((result) => {
       if (result.success) {
@@ -80,11 +79,12 @@ export default function AllRecipesPage() {
         <Link
           className="flex items-center justify-between bg-[#d24309] border border-[#d24309] border-2 rounded-md max-w-3xl mx-auto p-4 mb-8"
           to="/"
+          key={i.id}
         >
           <img
-            src="placeHolderFood.png"
+            src={i.imageDataUrl ?? "placeHolderFood.png"}
             alt="food"
-            className="w-24 h-24 rounded-md"
+            className="w-24 h-24 rounded-md bg-white"
           />
           <div className="ml-4">
             <h2 className="text-white font-bold text-xl">{i.name}</h2>

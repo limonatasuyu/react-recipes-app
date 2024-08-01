@@ -340,46 +340,46 @@ export function AddCategory(
           });
           db.close();
         };
-      } else {
-        const imageStore = transaction.objectStore(Stores.Images);
-        const imageId = Date.now();
-        const imageAddRequest = imageStore.add({
-          id: imageId,
-          dataUrl: dto.imageDataUrl,
+        return;
+      }
+      const imageStore = transaction.objectStore(Stores.Images);
+      const imageId = Date.now();
+      const imageAddRequest = imageStore.add({
+        id: imageId,
+        dataUrl: dto.imageDataUrl,
+      });
+
+      imageAddRequest.onsuccess = () => {
+        const categoryAddRequest = categoryStore.add({
+          id: Date.now(),
+          name: dto.name,
+          imageId: imageId,
         });
 
-        imageAddRequest.onsuccess = () => {
-          const categoryAddRequest = categoryStore.add({
-            id: Date.now(),
-            name: dto.name,
-            imageId: imageId,
-          });
-
-          categoryAddRequest.onsuccess = () => {
-            resolve({
-              success: true,
-              message: "Category added successfully.",
-            });
-            db.close();
-          };
-
-          categoryAddRequest.onerror = () => {
-            resolve({
-              success: false,
-              message: "Error while trying to add category.",
-            });
-            db.close();
-          };
-        };
-
-        imageAddRequest.onerror = () => {
+        categoryAddRequest.onsuccess = () => {
           resolve({
-            success: false,
-            message: "Error while trying to add image.",
+            success: true,
+            message: "Category added successfully.",
           });
           db.close();
         };
-      }
+
+        categoryAddRequest.onerror = () => {
+          resolve({
+            success: false,
+            message: "Error while trying to add category.",
+          });
+          db.close();
+        };
+      };
+
+      imageAddRequest.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to add image.",
+        });
+        db.close();
+      };
     } catch (error) {
       if (error instanceof Error) {
         resolve({
