@@ -13,16 +13,18 @@ import { GetCategoriesSelect } from "../../../logic/CategoryLogic";
 export function AddRecipeForm({
   handleClose,
   mutate,
+  defaultCategoryId,
 }: {
   handleClose: any;
   mutate: () => void;
+  defaultCategoryId?: number;
 }) {
   const [formValues, setFormValues] = useState<AddRecipeDTO>({
     name: "",
     ingredients: [],
     description: "",
     instructions: "",
-    categoryId: null as unknown as number,
+    categoryId: defaultCategoryId ?? (null as unknown as number),
     imageDataUrl: undefined,
   });
   const [pictureName, setPictureName] = useState("");
@@ -76,7 +78,12 @@ export function AddRecipeForm({
   }, [formValues, validate]);
 
   function handleSubmit() {
-    setTouched({ name: true, ingredients: true, instructions: true, category: true });
+    setTouched({
+      name: true,
+      ingredients: true,
+      instructions: true,
+      category: true,
+    });
     if (Object.keys(formErrors).length !== 0) return;
     setIsSubmitting(true);
     document.body.style.cursor = "wait";
@@ -100,8 +107,8 @@ export function AddRecipeForm({
     setIngredientInputValue("");
   }
 
-  return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full">
+  return (<>
+    {categories.length ? <div className="p-6 bg-white rounded-lg shadow-md w-full">
       <div>
         <div className="flex gap-4 items-start">
           <div>
@@ -132,7 +139,7 @@ export function AddRecipeForm({
             />
           </div>
           <div className="w-full -mt-2">
-            <div className="mb-4">
+            <div>
               <label className="block mb-2 font-medium">Recipe Name</label>
               <input
                 type="text"
@@ -143,12 +150,16 @@ export function AddRecipeForm({
                 }}
                 value={formValues.name}
               />
-              {formErrors.name && touched.name && (
-                <p className="text-red-400 font-bold">{formErrors.name}</p>
-              )}
+              <p
+                className={`text-red-400 font-bold transition-opacity duration-300 ${
+                  formErrors.name && touched.name ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {formErrors.name}&nbsp;
+              </p>
             </div>
 
-            <div className="mb-4">
+            <div>
               <label className="block mb-2 font-medium">Description</label>
               <input
                 type="text"
@@ -184,11 +195,12 @@ export function AddRecipeForm({
             </div>
 
             <div className="flex flex-wrap gap-2 min-h-8">
-             
-            {formErrors.ingredients && touched.ingredients && (
-              <p className="text-red-400 font-bold">{formErrors.ingredients}</p>
-            )}
-               {formValues.ingredients.map((i, x) => (
+              {formErrors.ingredients && touched.ingredients && (
+                <p className="text-red-400 font-bold">
+                  {formErrors.ingredients}
+                </p>
+              )}
+              {formValues.ingredients.map((i, x) => (
                 <span
                   className="cursor-pointer hover:bg-gray-400 bg-gray-500 rounded-full text-white px-3 py-1 flex items-center transition-colors duration-300"
                   onClick={() => {
@@ -220,11 +232,15 @@ export function AddRecipeForm({
               value={formValues.instructions}
             />
 
-            {formErrors.instructions && touched.instructions && (
-              <p className="text-red-400 font-bold">
-                {formErrors.instructions}
-              </p>
-            )}
+            <p
+              className={`text-red-400 font-bold transition-opacity duration-300 ${
+                formErrors.instructions && touched.instructions
+                  ? "opacity-100"
+                  : "opacity-0"
+              }`}
+            >
+              {formErrors.instructions}&nbsp;
+            </p>
           </div>
 
           <div className="flex flex-col mb-4">
@@ -273,6 +289,6 @@ export function AddRecipeForm({
           Cancel
         </button>
       </div>
-    </div>
+    </div> : <h1>Please first create a category from homepage</h1>}</>
   );
 }

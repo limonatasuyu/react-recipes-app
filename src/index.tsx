@@ -6,6 +6,8 @@ import Layout from "./Layout";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { InitDB } from "./db";
 import AllRecipesPage from './AllRecipesPage';
+import CategoryPage from "./CategoryPage";
+import RecipePage from "./RecipePage";
 
 const router = createHashRouter([
   {
@@ -19,7 +21,16 @@ const router = createHashRouter([
       { 
         path: "/all",
         element: <AllRecipesPage />
+      },
+      { 
+        path: "/category/:categoryId",
+        element: <CategoryPage />
+      },
+      { 
+        path: "/recipe/:recipeId",
+        element: <RecipePage />
       }
+
     ],
   },
 ], { basename: "/" })

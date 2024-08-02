@@ -28,6 +28,7 @@ export function InitDB() {
       if (!db.objectStoreNames.contains(Stores.Recipes)) {
         const store = db.createObjectStore(Stores.Recipes, { keyPath: "id" });
         store.createIndex("isFavorite", ["isFavorite"], { unique: false });
+        store.createIndex("categoryId", ["categoryId"], { unique: false });
       }
 
       if (!db.objectStoreNames.contains(Stores.Categories)) {

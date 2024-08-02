@@ -1,18 +1,40 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RecipeData } from "../../../interfaces";
+import { GetRecipesById } from "../../../logic/RecipesLogic";
+import { showToast } from "../../Toast";
 
-export function RecentRecipes({ data }: { data: RecipeData[] }) {
+export function RecentRecipes({ recipeIds }: { recipeIds: number[] }) {
+  const [recipes, setRecipes] = useState<any>([]);
+
+  useEffect(() => {
+    GetRecipesById({ ids: recipeIds }).then((result) => {
+      if (result.success) {
+        setRecipes(result.data);
+        return;
+      }
+      showToast(result.message, "error");
+    });
+  }, [recipeIds]);
+
   return (
     <div className="w-[20%] hidden 2xl:block">
       <h1 className="text-start text-3xl mb-2">Recently Viewed</h1>
-      {data.length ? (
+      {recipes.length ? (
         <div className="flex flex-col gap-2">
-          {data.map((i: RecipeData) => (
+          {recipes.map((i: RecipeData) => (
             <Link
               className="flex block bg-[#d24309] border border-[#d24309] border-2 rounded"
-              to="/"
+              to={`/recipe/${i.id}`}
+              key={i.id}
             >
-              <img src="placeHolderFood.png" alt="food" className="w-20" />
+              <div className="w-20 h-20 bg-white flex justify-center items-center overflow-hidden">
+                <img
+                  src={i.imageDataUrl ?? "placeHolderFood.png"}
+                  alt="food"
+                  className="w-20 h-auto"
+                />
+              </div>
               <div>
                 <h2 className="text-white font-bold ml-2">
                   {/*Name of the food*/}
@@ -35,5 +57,3 @@ export function RecentRecipes({ data }: { data: RecipeData[] }) {
     </div>
   );
 }
-
-

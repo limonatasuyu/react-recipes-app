@@ -402,25 +402,105 @@ export function DeleteCategory(
   return new Promise(async (resolve) => {
     try {
       db = await openDatabase("delete category");
-      const transaction = db.transaction(Stores.Categories, "readwrite");
-      const store = transaction.objectStore(Stores.Categories);
-      const query = store.get(dto.id);
+      const transaction = db.transaction(
+        [Stores.Categories, Stores.Recipes, Stores.Images],
+        "readwrite"
+      );
+      const recipeStore = transaction.objectStore(Stores.Recipes);
+      const categoryIndex = recipeStore.index("categoryId");
+      const categoryStore = transaction.objectStore(Stores.Categories);
+      const categoryQuery = categoryStore.get(dto.id);
 
-      query.onsuccess = () => {
-        store.delete(dto.id);
-        resolve({
-          success: true,
-          message: "Category deleted successfully.",
-        });
-        db.close();
+      categoryQuery.onsuccess = () => {
+        const recipesQuery = categoryIndex.getAll([dto.id]);
+        recipesQuery.onsuccess = async () => {
+          
+          const imageStore = transaction.objectStore(Stores.Images)
+          await Promise.all(
+            recipesQuery.result.map(async (recipe) => {
+              await deleteRecipe(recipe.id, recipeStore, imageStore);
+            })
+          );
+
+          categoryStore.delete(dto.id);
+
+          resolve({
+            success: true,
+            message: "Category deleted successfully.",
+          });
+          db.close();
+        };
+
+        recipesQuery.onerror = () => {
+          resolve({
+            success: false,
+            message: "Error while trying to delete category.",
+          });
+          db.close();
+        };
       };
 
-      query.onerror = () => {
+      categoryQuery.onerror = () => {
         resolve({
           success: false,
           message: "Error while trying to delete category.",
         });
         db.close();
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        resolve({
+          success: false,
+          message: error.message,
+        });
+      } else {
+        resolve({
+          success: false,
+          message: "An unknown error occurred.",
+        });
+      }
+    }
+  });
+}
+
+function deleteRecipe(id: number, recipeStore: IDBObjectStore, imageStore: IDBObjectStore) {
+
+  return new Promise(async (resolve) => {
+    try {
+      const recipeQuery = recipeStore.get(id);
+
+      recipeQuery.onsuccess = () => {
+        if (!recipeQuery.result.imageId) {
+          recipeStore.delete(id);
+          resolve({
+            success: true,
+            message: "Recipe deleted successfully.",
+          });
+          return;
+        }
+
+        const imageQuery = imageStore.get(recipeQuery.result.imageId);
+        imageQuery.onerror = () =>
+          resolve({
+            success: false,
+            message: "Error while trying to delete the image related to recipe",
+          });
+
+        imageQuery.onsuccess = () => {
+          imageStore.delete(imageQuery.result.id);
+          recipeStore.delete(id);
+          resolve({
+            success: true,
+            message: "Recipe deleted successfully",
+          });
+        };
+      };
+
+      recipeQuery.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to delete data.",
+        });
       };
     } catch (error) {
       if (error instanceof Error) {

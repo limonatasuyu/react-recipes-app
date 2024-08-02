@@ -4,11 +4,88 @@ import {
   UpdateRecipeDTO,
   DeleteRecipeDTO,
   RecipeData,
+  GetRecipesByCategoryIdDTO,
+  GetRecipesDTO
 } from "../interfaces";
 import { Stores } from "../constants";
 import { openDatabase } from "../db";
 
 let db: IDBDatabase;
+
+export function GetRecipesByCategoryId(
+  dto: GetRecipesByCategoryIdDTO
+): Promise<
+  | { success: false; message: string }
+  | { success: true; message: string; data: RecipeData[] }
+> {
+  return new Promise(async (resolve) => {
+    try {
+      db = await openDatabase("get recipes by category");
+      const transaction = db.transaction(
+        [Stores.Recipes, Stores.Images],
+        "readonly"
+      );
+      const recipeStore = transaction.objectStore(Stores.Recipes);
+      const imageStore = transaction.objectStore(Stores.Images);
+      const categoryIndex = recipeStore.index("categoryId");
+      const recipeQuery = categoryIndex.getAll([dto.id]);
+
+      recipeQuery.onsuccess = async () => {
+        const recipes = recipeQuery.result;
+
+        const recipesWithImages = await Promise.all(
+          recipes.map(async (recipe) => {
+            if (!recipe.imageId) {
+              return recipe;
+            }
+            const imageRequest = imageStore.get(recipe.imageId);
+
+            return new Promise((resolve) => {
+              imageRequest.onsuccess = () => {
+                const image = imageRequest.result;
+                resolve({
+                  ...recipe,
+                  imageDataUrl: image ? image.dataUrl : null,
+                });
+              };
+
+              imageRequest.onerror = () => {
+                resolve({ ...recipe, imageDataUrl: null });
+              };
+            });
+          })
+        );
+
+        resolve({
+          success: true,
+          message: "Recipes retrieved successfully.",
+          data: recipesWithImages,
+        });
+        db.close();
+      };
+
+      recipeQuery.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to get recipes.",
+        });
+        db.close();
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        resolve({
+          success: false,
+          message: error.message,
+        });
+      } else {
+        resolve({
+          success: false,
+          message: "An unknown error occurred.",
+        });
+      }
+    }
+  });
+}
 
 export function GetAllRecipes(): Promise<
   | { success: false; message: string }
@@ -82,6 +159,91 @@ export function GetAllRecipes(): Promise<
   });
 }
 
+export function GetRecipesById(dto: GetRecipesDTO): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: string;
+      data: {
+        name: string;
+        ingredients: string[];
+        description: string;
+        instructions: string;
+        categoryId: number;
+        imageDataUrl?: string;
+      }[];
+    }
+> {
+  return new Promise(async (resolve) => {  
+    try {
+      db = await openDatabase("get recipe");
+      const transaction = db.transaction(
+        [Stores.Recipes, Stores.Images],
+        "readonly"
+      );
+      const imageStore = transaction.objectStore(Stores.Images);
+      const recipeStore = transaction.objectStore(Stores.Recipes);
+      const recipeQuery = recipeStore.getAll();
+      
+      recipeQuery.onsuccess = async () => { 
+
+        let recipes = recipeQuery.result ?? [];
+        recipes = recipes.filter((i: any) => dto.ids.find(x => x === i.id))
+
+        const recipesWithImages = await Promise.all(
+          recipes.map(async (recipe) => {
+            if (!recipe.imageId) {
+              return recipe;
+            }
+            const imageRequest = imageStore.get(recipe.imageId);
+
+            return new Promise((resolve) => {
+              imageRequest.onsuccess = () => {
+                const image = imageRequest.result;
+                resolve({
+                  ...recipe,
+                  imageDataUrl: image ? image.dataUrl : null,
+                });
+              };
+
+              imageRequest.onerror = () => {
+                resolve({ ...recipe, imageDataUrl: null });
+              };
+            });
+          })
+        );
+
+        resolve({
+          success: true,
+          message: "Recipes retrieved successfully.",
+          data: recipesWithImages,
+        });
+        db.close();
+      
+      };
+      recipeQuery.onerror = () => {
+        resolve({
+          success: false,
+          message: "Error while trying to get data.",
+        });
+        db.close();
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        resolve({
+          success: false,
+          message: error.message,
+        });
+      } else {
+        resolve({
+          success: false,
+          message: "An unknown error occurred.",
+        });
+      }
+    }
+  });
+}
+
 export function GetRecipeById(dto: GetRecipeDTO): Promise<
   | { success: false; message: string }
   | {
@@ -120,24 +282,24 @@ export function GetRecipeById(dto: GetRecipeDTO): Promise<
           return;
         }
 
-        const imageRequest = imageStore.get(recipe.imageId)
+        const imageRequest = imageStore.get(recipe.imageId);
 
         imageRequest.onsuccess = () => {
           resolve({
             success: true,
             message: "Recipe retrieved successfully.",
-            data: {...recipe, imageDataUrl: imageRequest.result.dataUrl}, 
-          })
-          db.close()
-        }
+            data: { ...recipe, imageDataUrl: imageRequest.result.dataUrl },
+          });
+          db.close();
+        };
 
         imageRequest.onerror = () => {
           resolve({
             success: false,
             message: "Error while getting the image related to recipe",
-          })
-          db.close()
-        }
+          });
+          db.close();
+        };
       };
       recipeQuery.onerror = () => {
         resolve({
@@ -169,9 +331,10 @@ export function GetFavoriteRecipes(): Promise<any> {
       const transaction = db.transaction(Stores.Recipes, "readonly");
       const store = transaction.objectStore(Stores.Recipes);
       const isFavoriteIndex = store.index("isFavorite");
-      const query = isFavoriteIndex.getAll(["true"]);
+      const query = isFavoriteIndex.getAll([1]);
 
       query.onsuccess = () => {
+        console.log("query: ", query)
         resolve({
           success: true,
           message: "Favorite recipes retrieved successfully.",
@@ -332,7 +495,7 @@ export function AddRecipe(dto: AddRecipeDTO): Promise<any> {
         id,
         ingredients: dto.ingredients,
         instructions: dto.instructions,
-        isFavorite: false,
+        isFavorite: 0,
         name: dto.name,
       };
       if (!dto.imageDataUrl) {

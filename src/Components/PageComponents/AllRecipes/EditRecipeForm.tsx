@@ -13,23 +13,18 @@ export function EditRecipeForm({
   mutate: () => void;
   recipeId: number;
 }) {
-  const [formValues, setFormValues] = useState<AddRecipeDTO>({
+  const [formValues, setFormValues] = useState<AddRecipeDTO & {isFavorite: 0 | 1}>({
     name: "",
     ingredients: [],
     description: "",
     instructions: "",
     categoryId: null as unknown as number,
     imageDataUrl: undefined,
+    isFavorite: 0,
   });
   const [pictureName, setPictureName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ingredientInputValue, setIngredientInputValue] = useState("");
-  const [isFormValid, setIsFormValid] = useState({
-    name: true,
-    ingredients: true,
-    description: true,
-    categoryId: true,
-  });
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
@@ -37,7 +32,7 @@ export function EditRecipeForm({
   useEffect(() => {
     GetRecipeById({id: recipeId}).then((result) => {
       if (result.success) {
-        setFormValues(result.data)
+        setFormValues(result.data as AddRecipeDTO & {isFavorite: 0 | 1})
       }
     })
 
@@ -67,11 +62,11 @@ export function EditRecipeForm({
   };
 
   function handleSubmit() {
-    /*Validation will be here*/
+    /*Validation will be in here*/
 
     setIsSubmitting(true);
     document.body.style.cursor = "wait";
-    UpdateRecipe({id: recipeId, isFavorite: false, ...formValues}).then((result) => {
+    UpdateRecipe({id: recipeId, ...formValues}).then((result) => {
       setIsSubmitting(false);
       if (result.success) {
         handleClose();
@@ -90,14 +85,6 @@ export function EditRecipeForm({
     });
     setIngredientInputValue("");
   }
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      // Call the function or perform an action when Enter is pressed
-      handleIngredientAdd();
-    }
-  };
-
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full">
@@ -166,7 +153,7 @@ export function EditRecipeForm({
                 className="flex-1 border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
                 onChange={(e) => setIngredientInputValue(e.target.value)}
                 value={ingredientInputValue}
-                onKeyPress={handleKeyPress}
+                onKeyPress={(e) => e.key === "Enter" && handleIngredientAdd()}
               />
               <button
                 className="bg-[#d24309] hover:bg-[#b13607] text-white rounded-lg p-2 transition-colors duration-300"

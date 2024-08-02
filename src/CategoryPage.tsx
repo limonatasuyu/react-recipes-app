@@ -4,17 +4,29 @@ import { AddRecipeForm } from "./Components/PageComponents/AllRecipes/AddRecipeF
 import { EditRecipeForm } from "./Components/PageComponents/AllRecipes/EditRecipeForm";
 import { showToast } from "./Components/Toast";
 import { RecipeData } from "./interfaces";
-import { DeleteRecipe, GetAllRecipes, UpdateRecipe } from "./logic/RecipesLogic";
+import {
+  DeleteRecipe,
+  GetRecipesByCategoryId,
+  UpdateRecipe,
+} from "./logic/RecipesLogic";
+import { useParams } from "react-router-dom";
+import { GetCategory } from "./logic/CategoryLogic";
 import { RecipeCard } from "./Components/RecipeCard";
 
 export default function AllRecipesPage() {
+  const { categoryId } = useParams();
+  const [categoryName, setCategoryName] = useState("");
   const [recipes, setRecipes] = useState<RecipeData[]>([]);
   const [modalType, setModalType] = useState<"Edit" | "Add" | "Delete" | null>(
     null
   );
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
   useEffect(() => {
-    GetAllRecipes().then((result) => {
+    if (!categoryId) return;
+    GetCategory({ id: Number(categoryId) }).then((result) => {
+      if (result.success) setCategoryName(result.data.name);
+    });
+    GetRecipesByCategoryId({ id: Number(categoryId) }).then((result) => {
       if (result.success) {
         setRecipes(result.data);
         showToast(result.message, "success");
@@ -22,10 +34,11 @@ export default function AllRecipesPage() {
       }
       showToast(result.message, "error");
     });
-  }, []);
+  }, [categoryId]);
 
   function handleMutation() {
-    GetAllRecipes().then((result) => {
+    if (!categoryId) return;
+    GetRecipesByCategoryId({ id: Number(categoryId) }).then((result) => {
       if (result.success) {
         setRecipes(result.data);
         showToast(result.message, "success");
@@ -52,7 +65,7 @@ export default function AllRecipesPage() {
       showToast(result.message, "error");
     });
   }
-  
+
   function handleFavorite(recipe: RecipeData) {
     UpdateRecipe({ ...recipe, isFavorite: recipe.isFavorite ? 0 : 1 }).then(
       (result) => {
@@ -68,7 +81,7 @@ export default function AllRecipesPage() {
 
   return (
     <div className="mt-8 w-full px-4">
-      <h1 className="font-bold text-4xl text-center mb-8">All Recipes</h1>
+      <h1 className="font-bold text-4xl text-center mb-8">{categoryName}</h1>
       <button
         onClick={() => setModalType("Add")}
         className="group w-full flex items-center justify-between bg-[#d24309] border border-[#d24309] border-2 rounded-md max-w-3xl mx-auto p-4 mb-8"
@@ -88,7 +101,6 @@ export default function AllRecipesPage() {
           className="mr-2 group-hover:bg-[#ff5a19] rounded transition-colors duration-300"
         />
       </button>
-
       {recipes.map((i: RecipeData) => (
         <RecipeCard
           data={i}
@@ -112,6 +124,7 @@ export default function AllRecipesPage() {
           <AddRecipeForm
             handleClose={handleCloseModal}
             mutate={handleMutation}
+            defaultCategoryId={Number(categoryId)}
           />
         )}
         {selectedRecipeId && modalType === "Edit" && (

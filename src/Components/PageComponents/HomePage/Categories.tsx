@@ -41,7 +41,7 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
           className="group w-[75%] mr-4 p-4 block sm:w-full sm:mr-0 h-fit"
           onClick={() => setModalType("Add")}
         >
-          <img src="placeHolderFood.png" alt="food" className="w-inherit" />
+          <img src="placeHolderFood.png" alt="food" className="w-full" />
           <div className="group-hover:opacity-50 bg-[#d24309] text-white text-center py-4">
             Add New Category +
           </div>
@@ -50,15 +50,22 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
         {data.map((category) => (
           <Link
             key={category.id}
-            to={`/${category.id}`}
+            to={`/category/${category.id}`}
             className="group w-[75%] mr-4 p-4 block sm:w-full sm:mr-0 h-fit"
           >
-            <div className="w-inherit aspect-square overflow-hidden relative">
-              <img src={category.imageDataUrl ?? "placeHolderFood.png"} alt="food" className="w-inherit" />
+            <div className="w-full aspect-square overflow-hidden relative">
+              <img
+                src={category.imageDataUrl ?? "placeHolderFood.png"}
+                alt="food"
+                className="w-full"
+              />
               <div className="flex gap-4 absolute top-2 right-2">
                 <div
                   className="bg-gray-500 p-2 opacity-50 rounded hover:opacity-100"
-                  onClick={(e) => handleEdit(e, category.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEdit(e, category.id);
+                  }}
                 >
                   <img src="edit-icon.png" alt="edit-icon" className="w-[1.5rem]" />
                 </div>
@@ -91,6 +98,9 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
           />
         )}
         {modalType === "Delete" && (
+
+          <div>
+            <h2 className="text-3xl text-center font-bold mt-4">Are you sure, all recipes in this category will be deleted too ?</h2>
           <div className="flex justify-around mt-2">
             <button className="rounded py-2 px-4 text-white bg-[#d24309] hover:opacity-50" onClick={handleDelete}>
               Delete
@@ -98,6 +108,7 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
             <button className="rounded py-2 px-4 text-white bg-gray-300" onClick={() => setModalType(null)}>
               Cancel
             </button>
+          </div>
           </div>
         )}
       </Modal>

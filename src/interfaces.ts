@@ -12,6 +12,7 @@ export interface RecipeData {
   instructions: string;
   categoryId: number;
   imageDataUrl: string;
+  isFavorite: 0 | 1;
 }
 
 export interface UpdateCategoryDTO {name: string, imageDataUrl: string | null, id: number}
@@ -35,6 +36,10 @@ export interface GetRecipeDTO {
   id: number;
 }
 
+export interface GetRecipesDTO {
+  ids: number[];
+}
+
 export interface UpdateRecipeDTO {
   id: number;
   name: string;
@@ -42,7 +47,7 @@ export interface UpdateRecipeDTO {
   description?: string;
   instructions: string;
   categoryId: number;
-  isFavorite: boolean;
+  isFavorite: 0 | 1;
   imageDataUrl?: string;
 }
 
@@ -55,3 +60,4 @@ export interface AddImageDTO {
   dataUrl: string;  
 }
 
+export interface GetRecipesByCategoryIdDTO { id: number }

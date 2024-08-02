@@ -4,6 +4,7 @@ import { showToast } from "./Components/Toast";
 import { Categories } from "./Components/PageComponents/HomePage/Categories";
 import { RecentRecipes } from "./Components/PageComponents/HomePage/RecentRecipes";
 import { FavoriteRecipes } from "./Components/PageComponents/HomePage/FavoriteRecipes";
+import { GetFavoriteRecipes } from "./logic/RecipesLogic";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"Categories" | "Favorites">(
@@ -11,10 +12,13 @@ export default function HomePage() {
   );
 
   const [categories, setCategories] = useState([]);
-  //const [favoriteRecipes, setFavoriteRecipes] = useState([])
-  //const [recentRecipes, setRecentRecipes] = useState([])
+  const [favoriteRecipes, setFavoriteRecipes] = useState([])
+  const [recentRecipes, setRecentRecipes] = useState<{recipeId: number, index: number}[]>([])
 
   useEffect(() => {
+    const retrievedRecentRecipes = localStorage.getItem("recentRecipes")
+    if (retrievedRecentRecipes) setRecentRecipes(JSON.parse(retrievedRecentRecipes))
+
     GetCategories().then((result) => {
       if (result.success) {
         setCategories(result.data);
@@ -23,6 +27,17 @@ export default function HomePage() {
         showToast(result.message, "error");
       }
     });
+  
+    GetFavoriteRecipes().then((result) => {
+      if (result.success) {
+        setFavoriteRecipes(result.data);
+        showToast(result.message, "success");
+      } else {
+        showToast(result.message, "error");
+      }
+
+    })
+
   }, []);
 
   function handleCategoryMutation() {
@@ -34,6 +49,19 @@ export default function HomePage() {
         showToast(result.message, "error");
       }
     });
+  }
+  
+  function handleRecipeMutation() {
+  
+    GetFavoriteRecipes().then((result) => {
+      if (result.success) {
+        setFavoriteRecipes(result.data);
+        showToast(result.message, "success");
+      } else {
+        showToast(result.message, "error");
+      }
+
+    })
   }
 
   return (
@@ -60,9 +88,9 @@ export default function HomePage() {
         {activeTab === "Categories" ? (
           <Categories data={categories} mutate={handleCategoryMutation}/>
         ) : (
-          <FavoriteRecipes data={[]} />
+          <FavoriteRecipes data={favoriteRecipes} handleMutation={handleRecipeMutation}/>
         )}
-        <RecentRecipes data={[]} />
+        <RecentRecipes recipeIds={recentRecipes.map(i => Number(i.recipeId))} />
       </div>
     </div>
   );
