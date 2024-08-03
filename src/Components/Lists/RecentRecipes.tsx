@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { RecipeData } from "../../../interfaces";
-import { GetRecipesById } from "../../../logic/RecipesLogic";
-import { showToast } from "../../Toast";
+import { RecipeData } from "../../interfaces";
+import { GetRecipesById } from "../../logic/RecipesLogic";
+import { showToast } from "../Toast";
 
 export function RecentRecipes({ recipeIds }: { recipeIds: number[] }) {
   const [recipes, setRecipes] = useState<any>([]);

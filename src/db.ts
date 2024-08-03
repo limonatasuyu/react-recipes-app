@@ -1,4 +1,4 @@
-import { DBName, version,  Stores } from "./constants";
+import { DBName, version, Stores } from "./constants";
 
 let request: IDBOpenDBRequest;
 let db: IDBDatabase;
@@ -15,7 +15,6 @@ export function openDatabase(purpose: string): Promise<IDBDatabase> {
       const error = request.error;
       reject(new Error(`Error connecting to database to ${purpose}: ${error?.message || "Unknown error"}`));
     };
-
   });
 }
 
@@ -36,7 +35,7 @@ export function InitDB() {
       }
 
       if (!db.objectStoreNames.contains(Stores.Images)) {
-        db.createObjectStore(Stores.Images, { keyPath: "id" })
+        db.createObjectStore(Stores.Images, { keyPath: "id" });
       }
     };
 

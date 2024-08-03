@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import Modal from "./Components/Modal";
-import { AddRecipeForm } from "./Components/PageComponents/AllRecipes/AddRecipeForm";
-import { EditRecipeForm } from "./Components/PageComponents/AllRecipes/EditRecipeForm";
-import { showToast } from "./Components/Toast";
-import { RecipeData } from "./interfaces";
+import Modal from "../Components/Modal";
+import { AddRecipeForm } from "../Components/Forms/AddRecipeForm";
+import { EditRecipeForm } from "../Components/Forms/EditRecipeForm";
+import { showToast } from "../Components/Toast";
+import { RecipeData } from "../interfaces";
 import {
   DeleteRecipe,
   GetRecipesByCategoryId,
   UpdateRecipe,
-} from "./logic/RecipesLogic";
+} from "../logic/RecipesLogic";
 import { useParams } from "react-router-dom";
-import { GetCategory } from "./logic/CategoryLogic";
-import { RecipeCard } from "./Components/RecipeCard";
+import { GetCategory } from "../logic/CategoryLogic";
+import { RecipeCard } from "../Components/RecipeCard";
 
 export default function AllRecipesPage() {
   const { categoryId } = useParams();

@@ -1,31 +1,26 @@
-import {
-  useState,
-  ChangeEvent,
-  ChangeEventHandler,
-  useEffect,
-  useCallback,
-} from "react";
-import { showToast } from "../../Toast";
-import { AddRecipe } from "../../../logic/RecipesLogic";
-import { AddRecipeDTO } from "../../../interfaces";
-import { GetCategoriesSelect } from "../../../logic/CategoryLogic";
+import { useState, ChangeEvent, ChangeEventHandler, useEffect } from "react";
+import { showToast } from "../Toast";
+import { GetRecipeById, UpdateRecipe } from "../../logic/RecipesLogic";
+import { AddRecipeDTO } from "../../interfaces";
+import { GetCategoriesSelect } from "../../logic/CategoryLogic";
 
-export function AddRecipeForm({
+export function EditRecipeForm({
   handleClose,
   mutate,
-  defaultCategoryId,
+  recipeId
 }: {
   handleClose: any;
   mutate: () => void;
-  defaultCategoryId?: number;
+  recipeId: number;
 }) {
-  const [formValues, setFormValues] = useState<AddRecipeDTO>({
+  const [formValues, setFormValues] = useState<AddRecipeDTO & {isFavorite: 0 | 1}>({
     name: "",
     ingredients: [],
     description: "",
     instructions: "",
-    categoryId: defaultCategoryId ?? (null as unknown as number),
+    categoryId: null as unknown as number,
     imageDataUrl: undefined,
+    isFavorite: 0,
   });
   const [pictureName, setPictureName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,9 +28,14 @@ export function AddRecipeForm({
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
-  const [formErrors, setFormErrors] = useState<any>({});
-  const [touched, setTouched] = useState<any>({});
+
   useEffect(() => {
+    GetRecipeById({id: recipeId}).then((result) => {
+      if (result.success) {
+        setFormValues(result.data as AddRecipeDTO & {isFavorite: 0 | 1})
+      }
+    })
+
     GetCategoriesSelect().then((result) => {
       if (result.success) {
         setCategories(result.data);
@@ -43,7 +43,7 @@ export function AddRecipeForm({
       }
       showToast(result.message, "error");
     });
-  }, []);
+  }, [recipeId]);
 
   const handleImageChange: ChangeEventHandler<HTMLInputElement> = (
     e: ChangeEvent<HTMLInputElement>
@@ -61,33 +61,12 @@ export function AddRecipeForm({
     e.target.files = null;
   };
 
-  const validate = useCallback(() => {
-    const errors: any = {};
-    if (!formValues.name.length)
-      errors.name = "Please provide the name of the food.";
-    if (!formValues.ingredients.length)
-      errors.ingredients = "Please provide at least one ingredient.";
-    if (!formValues.instructions.length)
-      errors.instructions = "Please provide the instructions.";
-    if (!formValues.categoryId) errors.category = "Please select a category.";
-    setFormErrors(errors);
-  }, [formValues]);
-
-  useEffect(() => {
-    validate();
-  }, [formValues, validate]);
-
   function handleSubmit() {
-    setTouched({
-      name: true,
-      ingredients: true,
-      instructions: true,
-      category: true,
-    });
-    if (Object.keys(formErrors).length !== 0) return;
+    /*Validation will be in here*/
+
     setIsSubmitting(true);
     document.body.style.cursor = "wait";
-    AddRecipe(formValues).then((result) => {
+    UpdateRecipe({id: recipeId, ...formValues}).then((result) => {
       setIsSubmitting(false);
       if (result.success) {
         handleClose();
@@ -97,7 +76,7 @@ export function AddRecipeForm({
       document.body.style.cursor = "initial";
     });
   }
-
+  
   function handleIngredientAdd() {
     if (ingredientInputValue === "") return;
     setFormValues({
@@ -107,8 +86,8 @@ export function AddRecipeForm({
     setIngredientInputValue("");
   }
 
-  return (<>
-    {categories.length ? <div className="p-6 bg-white rounded-lg shadow-md w-full">
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-md w-full">
       <div>
         <div className="flex gap-4 items-start">
           <div>
@@ -139,35 +118,27 @@ export function AddRecipeForm({
             />
           </div>
           <div className="w-full -mt-2">
-            <div>
+            <div className="mb-4">
               <label className="block mb-2 font-medium">Recipe Name</label>
               <input
                 type="text"
                 className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
-                onChange={(e) => {
-                  setFormValues({ ...formValues, name: e.target.value });
-                  setTouched({ ...touched, name: true });
-                }}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, name: e.target.value })
+                }
                 value={formValues.name}
               />
-              <p
-                className={`text-red-400 font-bold transition-opacity duration-300 ${
-                  formErrors.name && touched.name ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                {formErrors.name}&nbsp;
-              </p>
+              {/*!isTextValid && <p className="text-red-400 font-bold">Please insert a valid category name</p>*/}
             </div>
 
-            <div>
+            <div className="mb-4">
               <label className="block mb-2 font-medium">Description</label>
               <input
                 type="text"
                 className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
-                onChange={(e) => {
-                  setFormValues({ ...formValues, description: e.target.value });
-                  setTouched({ ...touched, description: true });
-                }}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, description: e.target.value })
+                }
                 value={formValues.description}
               />
             </div>
@@ -180,9 +151,7 @@ export function AddRecipeForm({
               <input
                 type="text"
                 className="flex-1 border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
-                onChange={(e) => {
-                  setIngredientInputValue(e.target.value);
-                }}
+                onChange={(e) => setIngredientInputValue(e.target.value)}
                 value={ingredientInputValue}
                 onKeyPress={(e) => e.key === "Enter" && handleIngredientAdd()}
               />
@@ -193,25 +162,18 @@ export function AddRecipeForm({
                 <img src="plus-icon.png" alt="plus icon" className="w-6" />
               </button>
             </div>
-
-            <div className="flex flex-wrap gap-2 min-h-8">
-              {formErrors.ingredients && touched.ingredients && (
-                <p className="text-red-400 font-bold">
-                  {formErrors.ingredients}
-                </p>
-              )}
+            <div className="flex flex-wrap gap-2">
               {formValues.ingredients.map((i, x) => (
                 <span
                   className="cursor-pointer hover:bg-gray-400 bg-gray-500 rounded-full text-white px-3 py-1 flex items-center transition-colors duration-300"
                   onClick={() => {
                     const newIngredients = formValues.ingredients.filter(
-                      (y) => y !== i
+                      (item) => item !== i
                     );
                     setFormValues({
                       ...formValues,
                       ingredients: newIngredients,
                     });
-                    setTouched({ ...touched, ingredients: true });
                   }}
                   key={x}
                 >
@@ -225,22 +187,11 @@ export function AddRecipeForm({
             <label className="block mb-2 font-medium">Instructions</label>
             <textarea
               className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
-              onChange={(e) => {
-                setFormValues({ ...formValues, instructions: e.target.value });
-                setTouched({ ...touched, instructions: true });
-              }}
+              onChange={(e) =>
+                setFormValues({ ...formValues, instructions: e.target.value })
+              }
               value={formValues.instructions}
             />
-
-            <p
-              className={`text-red-400 font-bold transition-opacity duration-300 ${
-                formErrors.instructions && touched.instructions
-                  ? "opacity-100"
-                  : "opacity-0"
-              }`}
-            >
-              {formErrors.instructions}&nbsp;
-            </p>
           </div>
 
           <div className="flex flex-col mb-4">
@@ -249,12 +200,12 @@ export function AddRecipeForm({
               name="categories"
               id="categories"
               className="py-2 px-3 border-gray-300 border-2 rounded-lg outline-none focus:border-[#d24309] transition-colors duration-300"
-              onChange={(e) => {
+              onChange={(e) =>
                 setFormValues({
                   ...formValues,
                   categoryId: Number(e.target.value),
-                });
-              }}
+                })
+              }
             >
               {!formValues.categoryId && (
                 <option value={0}>Select A Category</option>
@@ -265,10 +216,6 @@ export function AddRecipeForm({
                 </option>
               ))}
             </select>
-
-            {formErrors.category && touched.category && (
-              <p className="text-red-400 font-bold">{formErrors.category}</p>
-            )}
           </div>
         </div>
       </div>
@@ -289,6 +236,7 @@ export function AddRecipeForm({
           Cancel
         </button>
       </div>
-    </div> : <h1>Please first create a category from homepage</h1>}</>
+    </div>
   );
 }
+

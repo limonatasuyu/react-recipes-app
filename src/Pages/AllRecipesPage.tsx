@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import Modal from "./Components/Modal";
-import { AddRecipeForm } from "./Components/PageComponents/AllRecipes/AddRecipeForm";
-import { EditRecipeForm } from "./Components/PageComponents/AllRecipes/EditRecipeForm";
-import { showToast } from "./Components/Toast";
-import { RecipeData } from "./interfaces";
-import { DeleteRecipe, GetAllRecipes, UpdateRecipe } from "./logic/RecipesLogic";
-import { RecipeCard } from "./Components/RecipeCard";
+import Modal from "../Components/Modal";
+import { AddRecipeForm } from "../Components/Forms/AddRecipeForm";
+import { EditRecipeForm } from "../Components/Forms/EditRecipeForm";
+import { showToast } from "../Components/Toast";
+import { RecipeData } from "../interfaces";
+import { DeleteRecipe, GetAllRecipes, UpdateRecipe } from "../logic/RecipesLogic";
+import { RecipeCard } from "../Components/RecipeCard";
 
 export default function AllRecipesPage() {
   const [recipes, setRecipes] = useState<RecipeData[]>([]);

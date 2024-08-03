@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import HomePage from './Homepage';
+import HomePage from './Pages/Homepage';
 import Layout from "./Layout";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { InitDB } from "./db";
-import AllRecipesPage from './AllRecipesPage';
-import CategoryPage from "./CategoryPage";
+import AllRecipesPage from './Pages/AllRecipesPage';
+import CategoryPage from "./Pages/CategoryPage";
 import RecipePage from "./RecipePage";
 
 const router = createHashRouter([

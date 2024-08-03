@@ -1,14 +1,12 @@
-import { useState, ChangeEvent, ChangeEventHandler, useEffect } from "react";
-import { showToast } from "../../Toast";
-import { GetCategory, UpdateCategory } from "../../../logic/CategoryLogic";
+import { useState, ChangeEvent, ChangeEventHandler } from "react";
+import { showToast } from "../Toast";
+import { AddCategory } from "../../logic/CategoryLogic";
 
-export function EditCategoryForm({
+export function AddCategoryForm({
   handleClose,
-  categoryId,
   mutate,
 }: {
-  handleClose: () => void;
-  categoryId: number;
+  handleClose: any;
   mutate: () => void;
 }) {
   const [textValue, setTextValue] = useState("");
@@ -16,13 +14,6 @@ export function EditCategoryForm({
   const [pictureName, setPictureName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTextValid, setIsTextValid] = useState(true);
-
-  useEffect(() => {
-    GetCategory({ id: categoryId }).then((result) => {
-      setTextValue(result.data.name);
-      if (result.data.imageDataUrl) setPicture(result.data.imageDataUrl);
-    });
-  }, [categoryId]);
 
   const handleImageChange: ChangeEventHandler<HTMLInputElement> = (
     e: ChangeEvent<HTMLInputElement>
@@ -48,11 +39,7 @@ export function EditCategoryForm({
 
     setIsSubmitting(true);
     document.body.style.cursor = "wait";
-    UpdateCategory({
-      name: textValue,
-      imageDataUrl: picture,
-      id: categoryId,
-    }).then((result) => {
+    AddCategory({ name: textValue, imageDataUrl: picture }).then((result) => {
       setIsSubmitting(false);
       if (result.success) {
         handleClose();

@@ -26,18 +26,6 @@ export default function Layout() {
             <Link className="text-white text-xl hover:font-bold" to="/all">
               All Recipes
             </Link>
-            <Link
-              className="text-white text-xl hover:font-bold"
-              to="/shopping-list"
-            >
-              Shopping List
-            </Link>
-            <Link
-              className="text-white text-xl hover:font-bold"
-              to="/meal-planner"
-            >
-              Meal Planner
-            </Link>
           </nav>
         </div>
         <div className="cursor-pointer" onClick={() => setIsNavigationOpen(!isNavigationOpen)}>

@@ -19,7 +19,7 @@ const Toast: React.FC<ToastProps> = ({ message, type, duration = 3000 }) => {
   );
 };
 
-const createToastContainer = () => {
+export const createToastContainer = () => {
   const container = document.createElement("div");
   container.id = "toast-container";
   container.style.position = "fixed";
@@ -39,7 +39,7 @@ export const showToast = (
   duration?: number
 ) => {
   const container =
-    document.getElementById("toast-container") || createToastContainer();
+  document.getElementById("toast-container") || createToastContainer();
   const toastId = Date.now();
   const toastElement = document.createElement("div");
   toastElement.id = String(toastId);

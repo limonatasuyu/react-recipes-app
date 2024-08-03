@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { GetCategories } from "./logic/CategoryLogic";
-import { showToast } from "./Components/Toast";
-import { Categories } from "./Components/PageComponents/HomePage/Categories";
-import { RecentRecipes } from "./Components/PageComponents/HomePage/RecentRecipes";
-import { FavoriteRecipes } from "./Components/PageComponents/HomePage/FavoriteRecipes";
-import { GetFavoriteRecipes } from "./logic/RecipesLogic";
+import { GetCategories } from "../logic/CategoryLogic";
+import { showToast } from "../Components/Toast";
+import { Categories } from "../Components/Lists/Categories";
+import { RecentRecipes } from "../Components/Lists/RecentRecipes";
+import { FavoriteRecipes } from "../Components/Lists/FavoriteRecipes";
+import { GetFavoriteRecipes } from "../logic/RecipesLogic";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"Categories" | "Favorites">(

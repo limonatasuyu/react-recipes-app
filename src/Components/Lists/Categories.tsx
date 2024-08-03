@@ -1,11 +1,11 @@
-import { CategoryData } from "../../../interfaces";
+import { CategoryData } from "../../interfaces";
 import { useState, MouseEvent } from "react";
 import { Link } from "react-router-dom";
-import Modal from "../../Modal";
-import { AddCategoryForm } from "./AddCategoryForm";
-import { EditCategoryForm } from "./EditCategoryForm";
-import { DeleteCategory } from "../../../logic/CategoryLogic";
-import { showToast } from "../../Toast";
+import Modal from "../Modal";
+import { AddCategoryForm } from "../Forms/AddCategoryForm";
+import { EditCategoryForm } from "../Forms/EditCategoryForm";
+import { DeleteCategory } from "../../logic/CategoryLogic";
+import { showToast } from "../Toast";
 
 export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () => void }) {
   const [modalType, setModalType] = useState<"Edit" | "Add" | "Delete" | null>(null);

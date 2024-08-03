@@ -15,13 +15,24 @@ export interface RecipeData {
   isFavorite: 0 | 1;
 }
 
-export interface UpdateCategoryDTO {name: string, imageDataUrl: string | null, id: number}
+export interface AddCategoryDTO {
+  name: string;
+  imageDataUrl: string | null;
+}
 
-export interface AddCategoryDTO { name: string; imageDataUrl: string | null}
+export interface GetCategoryDTO {
+  id: number;
+}
 
-export interface GetCategoryDTO { id: number; }
+export interface UpdateCategoryDTO {
+  name: string;
+  imageDataUrl: string | null;
+  id: number;
+}
 
-export interface DeleteCategoryDTO { id: number; }
+export interface DeleteCategoryDTO {
+  id: number;
+}
 
 export interface AddRecipeDTO {
   name: string;
@@ -52,12 +63,9 @@ export interface UpdateRecipeDTO {
 }
 
 export interface DeleteRecipeDTO {
-  id: number
+  id: number;
 }
 
-
-export interface AddImageDTO {
-  dataUrl: string;  
+export interface GetRecipesByCategoryIdDTO {
+  id: number;
 }
-
-export interface GetRecipesByCategoryIdDTO { id: number }

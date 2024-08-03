@@ -1,11 +1,11 @@
-import { RecipeData } from "../../../interfaces";
-import { RecipeCard } from "../../RecipeCard";
+import { RecipeData } from "../../interfaces";
+import { RecipeCard } from "../RecipeCard";
 import { useState } from "react";
-import Modal from "../../Modal";
-import { showToast } from "../../Toast";
-import { AddRecipeForm } from "../AllRecipes/AddRecipeForm";
-import { EditRecipeForm } from "../AllRecipes/EditRecipeForm";
-import { DeleteRecipe, UpdateRecipe } from "../../../logic/RecipesLogic";
+import Modal from "../Modal";
+import { showToast } from "../Toast";
+import { AddRecipeForm } from "../Forms/AddRecipeForm";
+import { EditRecipeForm } from "../Forms/EditRecipeForm";
+import { DeleteRecipe, UpdateRecipe } from "../../logic/RecipesLogic";
 
 export function FavoriteRecipes({
   data,

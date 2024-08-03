@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { showToast } from "./Components/Toast";
-import { RecipeData } from "./interfaces";
-import { GetRecipeById } from "./logic/RecipesLogic";
+import { showToast } from "../Components/Toast";
+import { RecipeData } from "../interfaces";
+import { GetRecipeById } from "../logic/RecipesLogic";
 import { useParams } from "react-router-dom";
 
 export default function RecipePage() {
