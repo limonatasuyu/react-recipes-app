@@ -7,7 +7,7 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 import { InitDB } from "./db";
 import AllRecipesPage from './Pages/AllRecipesPage';
 import CategoryPage from "./Pages/CategoryPage";
-import RecipePage from "./RecipePage";
+import RecipePage from "./Pages/RecipePage";
 
 const router = createHashRouter([
   {

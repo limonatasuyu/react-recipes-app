@@ -91,6 +91,7 @@ export default function AllRecipesPage() {
 
       {recipes.map((i: RecipeData) => (
         <RecipeCard
+          key={i.id}
           data={i}
           handleEdit={() => {
             setModalType("Edit");
