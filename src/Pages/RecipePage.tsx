@@ -53,7 +53,7 @@ export default function RecipePage() {
     />
     <div className="text-white text-center w-full">
       <h2 className="font-bold text-2xl mb-4">Ingredients</h2>
-      <ul className="mb-8 space-y-2">
+      <ul className="mb-8 space-y-2" data-testid="ingredients-list">
         {recipe.ingredients.map((ingredient, index) => (
           <li key={index} className="mb-2">
             {ingredient}
