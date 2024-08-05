@@ -19,8 +19,11 @@ export function EditCategoryForm({
 
   useEffect(() => {
     GetCategory({ id: categoryId }).then((result) => {
-      setTextValue(result.data.name);
-      if (result.data.imageDataUrl) setPicture(result.data.imageDataUrl);
+      if (result.success) {
+        setTextValue(result.data.name);
+        if (result.data.imageDataUrl) setPicture(result.data.imageDataUrl);
+      }
+      else showToast(result.message, "error")
     });
   }, [categoryId]);
 

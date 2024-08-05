@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { RecipeData } from "../interfaces";
 import * as RecipesLogic /*{ GetAllRecipes }*/ from "../logic/RecipesLogic";
