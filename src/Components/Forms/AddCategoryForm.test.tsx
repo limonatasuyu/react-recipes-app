@@ -4,6 +4,7 @@ import { userEvent } from "@testing-library/user-event";
 import { AddCategoryForm } from "./AddCategoryForm";
 import * as CategoryLogic /*{ AddCategory }*/ from "../../logic/CategoryLogic";
 import { AddCategoryDTO } from "../../interfaces";
+
 it("Should give validation errors when needed", async () => {
   const user = await userEvent.setup();
   const handleCloseMock = jest.fn();

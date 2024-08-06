@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { RecipeData } from "../interfaces";
 import * as RecipesLogic /*{ GetAllRecipes }*/ from "../logic/RecipesLogic";
@@ -51,18 +51,16 @@ it("should render buttons", async () => {
 });
 
 it("should render as many recipes as there are in the IndexedDB", async () => {
- 
   const SpyGetAllRecipes = jest.spyOn(RecipesLogic, "GetAllRecipes");
   SpyGetAllRecipes.mockImplementation(GetAllRecipesMock);
-   render(
+  render(
     <MemoryRouter>
       <AllRecipesPage />
     </MemoryRouter>
   );
 
-  
-  expect(SpyGetAllRecipes).toBeCalled()
-  expect(await screen.findAllByText(new RegExp(RecipeCardText))).toHaveLength(
+  await waitFor(() => expect(SpyGetAllRecipes).toBeCalled());
+  expect(screen.queryAllByText(new RegExp(RecipeCardText))).toHaveLength(
     mockRecipeCount
   );
 });

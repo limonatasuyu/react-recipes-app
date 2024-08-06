@@ -140,9 +140,10 @@ export function AddRecipeForm({
           </div>
           <div className="w-full -mt-2">
             <div>
-              <label className="block mb-2 font-medium">Recipe Name</label>
+              <label htmlFor="recipe-name-input" className="block mb-2 font-medium">Recipe Name</label>
               <input
                 type="text"
+                id="recipe-name-input"
                 className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
                 onChange={(e) => {
                   setFormValues({ ...formValues, name: e.target.value });
@@ -160,9 +161,10 @@ export function AddRecipeForm({
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Description</label>
+              <label htmlFor="recipe-description-input" className="block mb-2 font-medium">Description</label>
               <input
                 type="text"
+                id="recipe-description-input"
                 className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
                 onChange={(e) => {
                   setFormValues({ ...formValues, description: e.target.value });
@@ -175,10 +177,11 @@ export function AddRecipeForm({
         </div>
         <div className="flex-1 mt-2">
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Ingredients</label>
+            <label htmlFor="recipe-ingredients-input" className="block mb-2 font-medium">Ingredients</label>
             <div className="flex items-center gap-2 mb-2">
               <input
                 type="text"
+                id="recipe-ingredients-input"
                 className="flex-1 border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
                 onChange={(e) => {
                   setIngredientInputValue(e.target.value);
@@ -189,6 +192,7 @@ export function AddRecipeForm({
               <button
                 className="bg-[#d24309] hover:bg-[#b13607] text-white rounded-lg p-2 transition-colors duration-300"
                 onClick={handleIngredientAdd}
+                data-testid="add-ingredient-button"
               >
                 <img src="plus-icon.png" alt="plus icon" className="w-6" />
               </button>
@@ -202,6 +206,7 @@ export function AddRecipeForm({
               )}
               {formValues.ingredients.map((i, x) => (
                 <span
+                  data-testid="ingredient-box"
                   className="cursor-pointer hover:bg-gray-400 bg-gray-500 rounded-full text-white px-3 py-1 flex items-center transition-colors duration-300"
                   onClick={() => {
                     const newIngredients = formValues.ingredients.filter(
@@ -222,9 +227,10 @@ export function AddRecipeForm({
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Instructions</label>
+            <label htmlFor="recipe-instructions-input" className="block mb-2 font-medium">Instructions</label>
             <textarea
               className="w-full border-gray-300 border-2 rounded-lg py-2 px-3 outline-none focus:border-[#d24309] transition-colors duration-300"
+              id="recipe-instructions-input"
               onChange={(e) => {
                 setFormValues({ ...formValues, instructions: e.target.value });
                 setTouched({ ...touched, instructions: true });
@@ -244,7 +250,7 @@ export function AddRecipeForm({
           </div>
 
           <div className="flex flex-col mb-4">
-            <label className="block mb-2 font-medium">Category</label>
+            <label htmlFor="categories" className="block mb-2 font-medium">Category</label>
             <select
               name="categories"
               id="categories"
