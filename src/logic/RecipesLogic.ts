@@ -328,17 +328,48 @@ export function GetFavoriteRecipes(): Promise<any> {
   return new Promise(async (resolve) => {
     try {
       db = await openDatabase("get favorite recipes");
-      const transaction = db.transaction(Stores.Recipes, "readonly");
+      const transaction = db.transaction(
+        [Stores.Recipes, Stores.Images],
+        "readonly"
+      );
+      
+      
+      const imageStore = transaction.objectStore(Stores.Images);
       const store = transaction.objectStore(Stores.Recipes);
       const isFavoriteIndex = store.index("isFavorite");
       const query = isFavoriteIndex.getAll([1]);
 
-      query.onsuccess = () => {
-        console.log("query: ", query)
+      query.onsuccess = async () => {
+
+        const recipes = query.result;
+        const recipesWithImages = await Promise.all(
+          recipes.map(async (recipe) => {
+            if (!recipe.imageId) {
+              return recipe;
+            }
+            const imageRequest = imageStore.get(recipe.imageId);
+
+            return new Promise((resolve) => {
+              imageRequest.onsuccess = () => {
+                const image = imageRequest.result;
+                resolve({
+                  ...recipe,
+                  imageDataUrl: image ? image.dataUrl : null,
+                });
+              };
+
+              imageRequest.onerror = () => {
+                resolve({ ...recipe, imageDataUrl: null });
+              };
+            });
+          })
+        );
+
+
         resolve({
           success: true,
           message: "Favorite recipes retrieved successfully.",
-          data: query.result,
+          data: recipesWithImages,
         });
         db.close();
       };

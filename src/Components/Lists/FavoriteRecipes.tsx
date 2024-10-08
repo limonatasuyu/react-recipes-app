@@ -18,7 +18,7 @@ export function FavoriteRecipes({
     null
   );
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
-
+  console.log('data: ', data)
   function handleCloseModal() {
     setModalType(null);
     setSelectedRecipeId(null);
