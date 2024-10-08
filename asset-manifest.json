@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/react-recipes-app/static/css/main.51a549a3.css",
-    "main.js": "/react-recipes-app/static/js/main.8244d8c7.js",
+    "main.js": "/react-recipes-app/static/js/main.f07fde31.js",
     "index.html": "/react-recipes-app/index.html",
     "main.51a549a3.css.map": "/react-recipes-app/static/css/main.51a549a3.css.map",
-    "main.8244d8c7.js.map": "/react-recipes-app/static/js/main.8244d8c7.js.map"
+    "main.f07fde31.js.map": "/react-recipes-app/static/js/main.f07fde31.js.map"
   },
   "entrypoints": [
     "static/css/main.51a549a3.css",
-    "static/js/main.8244d8c7.js"
+    "static/js/main.f07fde31.js"
   ]
 }
