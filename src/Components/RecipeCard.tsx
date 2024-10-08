@@ -21,11 +21,13 @@ export function RecipeCard({
       key={data.id}
     >
       <div className="w-24 h-24 bg-white rounded-md flex justify-center items-center">
+        <div className="flex flex-col items-center justify-center h-24 overflow-hidden">
         <img
           src={data.imageDataUrl ?? "placeHolderFood.png"}
           alt="food"
-          className="w-24 h-auto"
+          className="w-auto h-auto"
         />
+        </div>
       </div>
       <div className="ml-4">
         <h2 className="text-white font-bold text-xl">{data.name}</h2>
