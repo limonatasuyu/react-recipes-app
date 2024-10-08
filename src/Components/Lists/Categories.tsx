@@ -54,11 +54,13 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
             className="group w-[75%] mr-4 p-4 block sm:w-full sm:mr-0 h-fit"
           >
             <div className="w-full aspect-square overflow-hidden relative">
+              <div className="flex flex-col justify-center h-full bg-gray-100">
               <img
                 src={category.imageDataUrl ?? "placeHolderFood.png"}
                 alt="food"
                 className="w-full"
               />
+              </div>
               <div className="flex gap-4 absolute top-2 right-2">
                 <div
                   className="bg-gray-500 p-2 opacity-50 rounded hover:opacity-100"

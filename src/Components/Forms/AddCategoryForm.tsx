@@ -75,7 +75,7 @@ export function AddCategoryForm({
               {picture ? "Change" : "Add"} Image
             </div>
             {pictureName && (
-              <div className="mt-2 text-sm text-gray-600">{pictureName}</div>
+              <div className="mt-2 text-sm text-gray-600 max-w-min">{pictureName}</div>
             )}
           </label>
           <input
