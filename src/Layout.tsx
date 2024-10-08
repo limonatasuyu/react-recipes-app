@@ -16,7 +16,7 @@ export default function Layout() {
           <h1 className="text-white text-3xl font-bold text-center">Tasties</h1>
       </div>
           <div className="flex justify-center mt-2 mr-2">
-            <img src="/icon.png" alt="hamburger-icon" width="auto" />
+            <img src="icon.png" alt="hamburger-icon" width="auto" />
           </div>
           <hr />
           <nav className="flex flex-col">
