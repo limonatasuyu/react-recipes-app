@@ -36,6 +36,7 @@ export function Categories({ data, mutate }: { data: CategoryData[]; mutate: () 
         className={`cursor-pointer flex flex-wrap justify-center sm:justify-start lg:grid lg:grid-cols-4 2xl:grid-cols-3 ${
           data.length < 3 ? "" : "sm:grid sm:grid-cols-3"
         } md:grid-cols-4 h-fit`}
+        style={{ zIndex: -1 }}
       >
         <button
           className="group w-[75%] mr-4 p-4 block sm:w-full sm:mr-0 h-fit"
