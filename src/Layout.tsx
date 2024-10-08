@@ -8,7 +8,7 @@ export default function Layout() {
   return (
     <div className="w-[99vw] overflow-hidden">
       <div className="flex">
-        <div className={`flex flex-col bg-[#d24309] w-40 gap-2 p-2 h-screen fixed ${isNavigationOpen ? ""  : "-ml-40"} shadow-lg shadow-gray-900`}>
+        <div className={`flex flex-col bg-[#d24309] w-40 gap-2 p-2 h-screen fixed z-10 ${isNavigationOpen ? ""  : "-ml-40"} shadow-lg shadow-gray-900`}>
           
         <div className="cursor-pointer flex gap-2 items-center justify-center" onClick={() => setIsNavigationOpen(!isNavigationOpen)}>
           <img src="hamburger-icon-white.png" className="w-6 h-6" alt="hamburger icon"/>
