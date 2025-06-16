@@ -28,9 +28,9 @@ This will start the app on http://localhost:3000.
 ## Testing
 To run the tests, use:
 
-bash
-Copy code
+```bash
 npm test
+```
 Jest and React Testing Library are used to ensure the application functions as expected.
 
 ## Technologies Used
